@@ -1,15 +1,21 @@
-from flask import Flask 
-from flask_restful import Resource, Api
+from flask import Flask, request 
+from flask_restful import Resource, Api, reqparse 
+from flask_jwt import JWT, jwt_required
+from security import authenticate, identity
+from resources.user import UserRegister
+from resources.item import ItemList, Item
 
 
 app = Flask(__name__)
+app.secret_key = 'olga'
 api = Api(app)
 
-class Link(Resource):
-	def get(self, url):
-		return {'link': url}
+jwt = JWT(app, authenticate, identity)
+ 
 
+api.add_resource(ItemList, '/items')
+api.add_resource(Item, '/item/<string:name>')
+api.add_resource(UserRegister, '/register')
 
-api.add_resource(Student, '/link/<string:url>')
-
-app.run(port=5000)
+if __name__ == '__main__':
+	app.run(port=5000, debug=True)
